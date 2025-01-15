@@ -2,25 +2,32 @@ const lat = "16.9406159";
 const lon = "97.3462055";
 
 const key = "3e47c1570e1e6c8480182d878001cdf0";
-const uri = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${key}`;
-
+const uri = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${key}&units=metric`;
+console.log(uri);
 fetch(uri)
     .then(response => response.json())
-    .then(data => displayWeatherData(data))
+    .then(data => displayWeatherData(data.list))
     .catch(err => console.log(err));
 
-function displayWeatherData(data) {
-    const humidityData = data.list.map(item => ([
+function displayWeatherData(items) {
+
+    const humidityData = items.map(item => ([
         item.dt * 1000,
         item.main.humidity
     ]));
 
-    createHighcharts(humidityData);
+    const temperatureData = items.map(item => ([
+        item.dt * 1000,
+        item.main.temp
+    ]));
+
+    createHumidityChart(humidityData);
+    createTempChart(temperatureData);
 }
 
-function createHighcharts(items) {
+function createHumidityChart(items) {
 
-    const chart = Highcharts.chart('humidity', {
+    Highcharts.chart('humidity', {
         chart: {
             type: 'spline',
             backgroundColor: 'transparent',
@@ -110,4 +117,77 @@ function createHighcharts(items) {
 
     });
 
+}
+
+function createTempChart(items) {
+
+    Highcharts.chart('temperature', {
+        chart: {
+            type: 'area',
+            backgroundColor : 'transparent',
+        },
+       
+        title: {
+            floating : false,
+            align : 'left',
+            text: 'Average Weekly Temperature',
+            style : {
+                color : '#fff',
+            }
+        },
+       
+        xAxis: {
+            type: 'datetime',
+            labels: {
+                style: {
+                    color: "#FFF",
+                }
+            },
+
+            dateTimeLabelFormats: {
+                day: '%b %e',
+            },
+            tickInterval: 12 * 3600 * 1000,
+
+        },
+        yAxis: {
+            title: {
+                text: 'Temperature °C',
+                style : {
+                    color : '#fff',
+                }
+            },
+            labels: {
+                style: {
+                    color: "#FFF",
+                }
+            },
+            gridLineColor : 'transparent',
+        },
+        tooltip: {
+            pointFormat: '<span style="color:{point.color}">\u25CF </span>{series.name} : <b>{point.y}%</b>'
+        },
+        plotOptions: {
+            area: {
+                
+                marker: {
+                    enabled: false,
+                    symbol: 'circle',
+                    radius: 5,
+                    states: {
+                        hover: {
+                            enabled: true
+                        }
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'temperature',
+            data: items,
+            color: 'brown',
+            lineWidth : 5
+        },
+    ]
+    });
 }
