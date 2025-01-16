@@ -1,42 +1,50 @@
-const lat = "16.9406159";
-const lon = "97.3462055";
-
 const key = "3e47c1570e1e6c8480182d878001cdf0";
-const uri = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${key}&units=metric`;
-
-fetch(uri)
-    .then(response => response.json())
+// Default Location
+fetchURI()
     .then(data => displayWeatherData(data.list))
     .catch(err => console.error(err));
+
+async function fetchURI(lati = "16.9406159", longi = "97.3462055") {
+
+    let lat = lati;
+    let lon = longi;
+
+    const uri = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${key}&units=metric`;
+
+    const response = await fetch(uri);
+    const data = await response.json();
+
+    return data;
+}
 
 function displayWeatherData(data) {
 
     const weatherData = extractWeatherData(data);
 
     const createCharts = {
-        humidity : {
-            id : 'humidity',
-            title : 'Average Weekly Humidity',
-            yTitle : 'Humidity',
-            data : [weatherData[0]],
+        humidity: {
+            id: 'humidity',
+            title: 'Average Weekly Humidity',
+            yTitle: 'Humidity',
+            data: [weatherData[0]],
         },
-        temperature : {
-            id : 'temperature',
-            title : 'Average Weekly Temperature',
-            yTitle : 'Temperature °C',
-            data : [weatherData[1]],
+        temperature: {
+            id: 'temperature',
+            title: 'Average Weekly Temperature',
+            yTitle: 'Temperature °C',
+            data: [weatherData[1]],
         },
-        pressure : {
-            id : 'pressure',
-            title : 'Average Weekly Pressure',
-            yTitle : 'Pressure',
-            data : [weatherData[2]]
+        pressure: {
+            id: 'pressure',
+            title: 'Average Weekly Pressure',
+            yTitle: 'Pressure',
+            data: [weatherData[2]]
         },
-        overall : {
-            id : 'weeklyOverview',
-            title : 'Weekly Overview',
-            yTitle : 'Over All Chart',
-            data : weatherData,
+        overall: {
+            id: 'weeklyOverview',
+            title: 'Weekly Overview',
+            yTitle: 'Over All Chart',
+            data: weatherData,
         }
 
     };
@@ -91,7 +99,7 @@ function extractWeatherData(items) {
 
 }
 
-function createSplineChart({id, title, yTitle, data}) {
+function createSplineChart({ id, title, yTitle, data }) {
 
     Highcharts.chart(id, {
         chart: {
@@ -178,7 +186,7 @@ function createSplineChart({id, title, yTitle, data}) {
 
 }
 
-function createAreaChart({id, title, yTitle, data}) {
+function createAreaChart({ id, title, yTitle, data }) {
 
     Highcharts.chart(id, {
         chart: {
@@ -260,5 +268,44 @@ function createAreaChart({id, title, yTitle, data}) {
         series: data,
     });
 }
+
+
+//--------------------------------------------------------Jquery UI autocomplete with ajax
+
+$(function () {
+    // Initialize jQuery UI Autocomplete
+    $('#searchCity').autocomplete({
+        source: function (request, response) {
+
+            const cityInput = request.term; //$('#searchCity').val()
+            const geocodeUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&limit=10&appid=${key}`;
+
+            $.get(geocodeUrl, function (data) {
+                const cities = data.map(city => (
+                    {
+                        value: city.name, //li value
+                        country: city.country,
+                        name: city.name,
+                        lat: city.lat,
+                        lon: city.lon
+                    }));
+                response(cities);
+
+            }).fail(err => console.error(err));
+        },
+        select: function (event, ui) {
+            let lat = ui.item.lat;
+            let lon = ui.item.lon;
+
+            fetchURI(lat, lon)
+                .then(data => displayWeatherData(data.list))
+                .catch(err => console.error(err));
+        },
+        minLength: 3 // Minimum characters to trigger the autocomplete
+    });
+});
+
+
+
 
 

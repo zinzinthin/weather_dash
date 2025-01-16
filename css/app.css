@@ -6,11 +6,44 @@
     letter-spacing: 2px;
 }
 
-.lh-10{
-    line-height: 10px;
-}
-
 body{
     background-color: rgb(22, 25, 40);
     color: white;
 }
+
+.searchbox{
+    width: 250px;
+}
+
+.ui-autocomplete{
+
+    width: 245px;
+    max-height: 200px;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+    white-space: nowrap;
+
+    background-color: #fff;
+
+    padding: 0px 13px;
+
+    border-radius: 0 0 5px 5px;
+}
+
+.ui-menu-item{
+    width: 100% !important;
+    color: #000;
+
+    list-style: none;
+    padding: 5px 0;
+
+    cursor: pointer;
+
+}
+
+.ui-menu-item:hover{
+    background-color: #f6f6f6;
+}
+
+
