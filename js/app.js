@@ -7,9 +7,49 @@ const uri = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${l
 fetch(uri)
     .then(response => response.json())
     .then(data => displayWeatherData(data.list))
-    .catch(err => console.log(err));
+    .catch(err => console.error(err));
 
-function displayWeatherData(items) {
+function displayWeatherData(data) {
+
+    const weatherData = extractWeatherData(data);
+
+    const createCharts = {
+        humidity : {
+            id : 'humidity',
+            title : 'Average Weekly Humidity',
+            yTitle : 'Humidity',
+            data : [weatherData[0]],
+        },
+        temperature : {
+            id : 'temperature',
+            title : 'Average Weekly Temperature',
+            yTitle : 'Temperature °C',
+            data : [weatherData[1]],
+        },
+        pressure : {
+            id : 'pressure',
+            title : 'Average Weekly Pressure',
+            yTitle : 'Pressure',
+            data : [weatherData[2]]
+        },
+        overall : {
+            id : 'weeklyOverview',
+            title : 'Weekly Overview',
+            yTitle : 'Over All Chart',
+            data : weatherData,
+        }
+
+    };
+
+    createSplineChart(createCharts.humidity);
+    createSplineChart(createCharts.overall);
+
+    createAreaChart(createCharts.temperature);
+    createAreaChart(createCharts.pressure);
+
+}
+
+function extractWeatherData(items) {
 
     const humidityData = items.map(item => ([
         item.dt * 1000,
@@ -29,31 +69,29 @@ function displayWeatherData(items) {
 
     const weatherData = [
         {
-            name : "humidity",
-            data : humidityData,
-            lineWidth : 5
+            name: "humidity",
+            data: humidityData,
+            lineWidth: 5
         },
         {
-            name : "temperature",
-            data : temperatureData,
-            lineWidth : 5,
+            name: "temperature",
+            data: temperatureData,
+            lineWidth: 5,
             color: '#e0225b',
         },
         {
-            name : "pressure",
-            data : pressureData,
-            lineWidth : 5,
+            name: "pressure",
+            data: pressureData,
+            lineWidth: 5,
             color: 'darkred',
         },
     ];
 
-    createSplineChart('humidity','Average Weekly Humidity','Humidity',[weatherData[0]]);
-    createSplineChart('weeklyOverview','Weekly Overview','Over All Chart',weatherData);
-    createAreaChart('temperature','Average Weekly Temperature','Temperature °C',[weatherData[1]]);
-    createAreaChart('pressure','Average Weekly Pressure','Pressure',[weatherData[2]]);
+    return weatherData;
+
 }
 
-function createSplineChart(id,title,yTitle,items) {
+function createSplineChart({id, title, yTitle, data}) {
 
     Highcharts.chart(id, {
         chart: {
@@ -134,13 +172,13 @@ function createSplineChart(id,title,yTitle,items) {
             pointFormat: '<span style="color:{point.color}">\u25CF </span>{series.name} : <b>{point.y}%</b>'
         },
 
-        series: items
+        series: data,
 
     });
 
 }
 
-function createAreaChart(id,title,yTitle,items) {
+function createAreaChart({id, title, yTitle, data}) {
 
     Highcharts.chart(id, {
         chart: {
@@ -219,7 +257,7 @@ function createAreaChart(id,title,yTitle,items) {
                 }
             }
         },
-        series: items
+        series: data,
     });
 }
 
