@@ -1,15 +1,36 @@
-const key = "3e47c1570e1e6c8480182d878001cdf0";
-// Default Location
-fetchURI()
-    .then(data => displayWeatherData(data.list))
-    .catch(err => console.error(err));
+//API keys
+const ipregistrykey = "ira_6Ep5a9o0Kp9C7jUix5AaJX6hea31C40IBpGM";
+const openweathrkey = "3e47c1570e1e6c8480182d878001cdf0";
 
-async function fetchURI(lati = "16.9406159", longi = "97.3462055") {
+//fetch lat & logi for user current location 
+//and then display weather info
+fetchLocation().then(data => {
+    const lati = data.location.latitude;
+    const longi = data.location.longitude;
+    setTimeout(() => {
+        fetchWeather(lati, longi)
+            .then(data => {
+                console.log(data);
+                displayWeatherData(data.list);
+            });
+    }, 1000)
+}).catch(err => {
+    console.error(err);
+    console.log("Please use a VPN!!");
+});
+
+async function fetchLocation() {
+    const response = await fetch(`https://api.ipregistry.co?key=${ipregistrykey}&fields=location`);
+    const data = await response.json();
+    return data;
+}
+
+async function fetchWeather(lati = "16.8257979", longi = "96.1456519") {
 
     let lat = lati;
     let lon = longi;
 
-    const uri = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${key}&units=metric`;
+    const uri = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${openweathrkey}&units=metric`;
 
     const response = await fetch(uri);
     const data = await response.json();
@@ -21,6 +42,7 @@ function displayWeatherData(data) {
 
     const weatherData = extractWeatherData(data);
 
+    //information for creating charts
     const createCharts = {
         humidity: {
             id: 'humidity',
@@ -57,6 +79,7 @@ function displayWeatherData(data) {
 
 }
 
+//prepare weather data for showing in charts
 function extractWeatherData(items) {
 
     const humidityData = items.map(item => ([
@@ -269,7 +292,6 @@ function createAreaChart({ id, title, yTitle, data }) {
     });
 }
 
-
 //--------------------------------------------------------Jquery UI autocomplete with ajax
 
 $(function () {
@@ -278,12 +300,13 @@ $(function () {
         source: function (request, response) {
 
             const cityInput = request.term; //$('#searchCity').val()
+            const key = "3e47c1570e1e6c8480182d878001cdf0";
             const geocodeUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&limit=10&appid=${key}`;
 
             $.get(geocodeUrl, function (data) {
                 const cities = data.map(city => (
                     {
-                        value: city.name, //li value
+                        value: city.name, //for li val()
                         country: city.country,
                         name: city.name,
                         lat: city.lat,
@@ -297,7 +320,7 @@ $(function () {
             let lat = ui.item.lat;
             let lon = ui.item.lon;
 
-            fetchURI(lat, lon)
+            fetchWeather(lat, lon)
                 .then(data => displayWeatherData(data.list))
                 .catch(err => console.error(err));
         },
