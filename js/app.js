@@ -45,17 +45,17 @@ function displayWeatherData(items) {
             lineWidth : 5,
             color: 'darkred',
         },
-    ]
+    ];
 
-    createHumidityChart(humidityData);
-    createTempChart(temperatureData);
-    createPressureChart(pressureData);
-    createWeatherOverviews(weatherData);
+    createSplineChart('humidity','Average Weekly Humidity','Humidity',[weatherData[0]]);
+    createSplineChart('weeklyOverview','Weekly Overview','Over All Chart',weatherData);
+    createAreaChart('temperature','Average Weekly Temperature','Temperature °C',[weatherData[1]]);
+    createAreaChart('pressure','Average Weekly Pressure','Pressure',[weatherData[2]]);
 }
 
-function createHumidityChart(items) {
+function createSplineChart(id,title,yTitle,items) {
 
-    Highcharts.chart('humidity', {
+    Highcharts.chart(id, {
         chart: {
             type: 'spline',
             backgroundColor: 'transparent',
@@ -64,7 +64,7 @@ function createHumidityChart(items) {
         title: {
             floating: false,
             align: 'left',
-            text: 'Average Weekly Humidity',
+            text: title,
             style: {
                 color: "#FFF",
             }
@@ -87,278 +87,7 @@ function createHumidityChart(items) {
 
         yAxis: {
             title: {
-                text: 'Humidity',
-                style: {
-                    color: "#FFF",
-                }
-            },
-            labels: {
-                style: {
-                    color: "#FFF",
-                }
-            },
-
-            gridLineColor: 'transparent',
-
-            min: 20,
-            max: 100
-
-        },
-
-        plotOptions: {
-            series: {
-                dataLabels: {
-                    enabled: true,
-                    align: 'right',
-                    formatter: function () {
-                        if (this.point.x === this.series.data[this.series.data.length - 1].x) {
-                            return this.series.name;
-                        }
-                        return null;
-                    },
-                    style: {
-                        color: "#fff",
-                        fontWeight: 'bloder',
-                        fontSize: 16
-                    },
-                },
-                marker: {
-                    enabled: false,
-                    states: {
-                        hover: {
-                            enabled: true,
-                        }
-                    }
-                }
-            }
-        },
-
-        tooltip: {
-            pointFormat: '<span style="color:{point.color}">\u25CF </span>{series.name} : <b>{point.y}%</b>'
-        },
-
-        series: [{
-            name: 'humidity',
-            data: items,
-            lineWidth: 5,
-        },]
-
-    });
-
-}
-
-function createTempChart(items) {
-
-    Highcharts.chart('temperature', {
-        chart: {
-            type: 'area',
-            backgroundColor: 'transparent',
-        },
-
-        title: {
-            floating: false,
-            align: 'left',
-            text: 'Average Weekly Temperature',
-            style: {
-                color: '#fff',
-            }
-        },
-
-        xAxis: {
-            type: 'datetime',
-            labels: {
-                style: {
-                    color: "#FFF",
-                }
-            },
-
-            dateTimeLabelFormats: {
-                day: '%b %e',
-            },
-            tickInterval: 12 * 3600 * 1000,
-
-        },
-        yAxis: {
-            title: {
-                text: 'Temperature °C',
-                style: {
-                    color: '#fff',
-                }
-            },
-            labels: {
-                style: {
-                    color: "#FFF",
-                }
-            },
-            gridLineColor: 'transparent',
-        },
-        tooltip: {
-            pointFormat: '<span style="color:{point.color}">\u25CF </span>{series.name} : <b>{point.y}%</b>'
-        },
-        plotOptions: {
-            area: {
-
-                dataLabels: {
-                    enabled: true,
-                    align: 'right',
-                    formatter: function () {
-                        if (this.point.x === this.series.data[this.series.data.length - 1].x) {
-                            return this.series.name;
-                        }
-                        return null;
-                    },
-                    style: {
-                        color: "#fff",
-                        fontWeight: 'bloder',
-                        fontSize: 16
-                    },
-                },
-
-                marker: {
-                    enabled: false,
-                    symbol: 'circle',
-                    radius: 5,
-                    states: {
-                        hover: {
-                            enabled: true
-                        }
-                    }
-                }
-            }
-        },
-        series: [{
-            name: 'temperature',
-            data: items,
-            color: '#e0225b',
-            lineWidth: 5
-        },
-        ]
-    });
-}
-
-function createPressureChart(items) {
-
-    Highcharts.chart('pressure', {
-        chart: {
-            type: 'area',
-            backgroundColor: 'transparent',
-        },
-
-        title: {
-            floating: false,
-            align: 'left',
-            text: 'Average Weekly Pressure',
-            style: {
-                color: '#fff',
-            }
-        },
-
-        xAxis: {
-            type: 'datetime',
-            labels: {
-                style: {
-                    color: "#FFF",
-                }
-            },
-
-            dateTimeLabelFormats: {
-                day: '%b %e',
-            },
-            tickInterval: 12 * 3600 * 1000,
-
-        },
-        yAxis: {
-            title: {
-                text: 'Pressure',
-                style: {
-                    color: '#fff',
-                }
-            },
-            labels: {
-                style: {
-                    color: "#FFF",
-                }
-            },
-            gridLineColor: 'transparent',
-        },
-        tooltip: {
-            pointFormat: '<span style="color:{point.color}">\u25CF </span>{series.name} : <b>{point.y}%</b>'
-        },
-        plotOptions: {
-            area: {
-
-                dataLabels: {
-                    enabled: true,
-                    align: 'right',
-                    formatter: function () {
-                        if (this.point.x === this.series.data[this.series.data.length - 1].x) {
-                            return this.series.name;
-                        }
-                        return null;
-                    },
-                    style: {
-                        color: "#fff",
-                        fontWeight: 'bloder',
-                        fontSize: 16
-                    },
-                },
-
-                marker: {
-                    enabled: false,
-                    symbol: 'circle',
-                    radius: 5,
-                    states: {
-                        hover: {
-                            enabled: true
-                        }
-                    }
-                }
-            }
-        },
-        series: [{
-            name: 'pressure',
-            data: items,
-            color: 'darkred',
-            lineWidth: 5
-        },
-        ]
-    });
-}
-
-function createWeatherOverviews(items) {
-    Highcharts.chart('weeklyOverview', {
-        chart: {
-            type: 'spline',
-            backgroundColor: 'transparent',
-        },
-
-        title: {
-            floating: false,
-            align: 'left',
-            text: 'Average Weekly Humidity',
-            style: {
-                color: "#FFF",
-            }
-        },
-
-        xAxis: {
-            type: 'datetime',
-            labels: {
-                style: {
-                    color: "#FFF",
-                }
-            },
-
-            dateTimeLabelFormats: {
-                day: '%b %e',
-            },
-            tickInterval: 12 * 3600 * 1000,
-
-        },
-
-        yAxis: {
-            title: {
-                text: 'Weekly Overviews',
+                text: yTitle,
                 style: {
                     color: "#FFF",
                 }
@@ -408,4 +137,90 @@ function createWeatherOverviews(items) {
         series: items
 
     });
+
 }
+
+function createAreaChart(id,title,yTitle,items) {
+
+    Highcharts.chart(id, {
+        chart: {
+            type: 'area',
+            backgroundColor: 'transparent',
+        },
+
+        title: {
+            floating: false,
+            align: 'left',
+            text: title,
+            style: {
+                color: '#fff',
+            }
+        },
+
+        xAxis: {
+            type: 'datetime',
+            labels: {
+                style: {
+                    color: "#FFF",
+                }
+            },
+
+            dateTimeLabelFormats: {
+                day: '%b %e',
+            },
+            tickInterval: 12 * 3600 * 1000,
+
+        },
+        yAxis: {
+            title: {
+                text: yTitle,
+                style: {
+                    color: '#fff',
+                }
+            },
+            labels: {
+                style: {
+                    color: "#FFF",
+                }
+            },
+            gridLineColor: 'transparent',
+        },
+        tooltip: {
+            pointFormat: '<span style="color:{point.color}">\u25CF </span>{series.name} : <b>{point.y}%</b>'
+        },
+        plotOptions: {
+            area: {
+
+                dataLabels: {
+                    enabled: true,
+                    align: 'right',
+                    formatter: function () {
+                        if (this.point.x === this.series.data[this.series.data.length - 1].x) {
+                            return this.series.name;
+                        }
+                        return null;
+                    },
+                    style: {
+                        color: "#fff",
+                        fontWeight: 'bloder',
+                        fontSize: 16
+                    },
+                },
+
+                marker: {
+                    enabled: false,
+                    symbol: 'circle',
+                    radius: 5,
+                    states: {
+                        hover: {
+                            enabled: true
+                        }
+                    }
+                }
+            }
+        },
+        series: items
+    });
+}
+
+
