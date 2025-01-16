@@ -26,9 +26,31 @@ function displayWeatherData(items) {
         item.main.pressure
     ]));
 
+
+    const weatherData = [
+        {
+            name : "humidity",
+            data : humidityData,
+            lineWidth : 5
+        },
+        {
+            name : "temperature",
+            data : temperatureData,
+            lineWidth : 5,
+            color: '#e0225b',
+        },
+        {
+            name : "pressure",
+            data : pressureData,
+            lineWidth : 5,
+            color: 'darkred',
+        },
+    ]
+
     createHumidityChart(humidityData);
     createTempChart(temperatureData);
     createPressureChart(pressureData);
+    createWeatherOverviews(weatherData);
 }
 
 function createHumidityChart(items) {
@@ -130,18 +152,18 @@ function createTempChart(items) {
     Highcharts.chart('temperature', {
         chart: {
             type: 'area',
-            backgroundColor : 'transparent',
+            backgroundColor: 'transparent',
         },
-       
+
         title: {
-            floating : false,
-            align : 'left',
+            floating: false,
+            align: 'left',
             text: 'Average Weekly Temperature',
-            style : {
-                color : '#fff',
+            style: {
+                color: '#fff',
             }
         },
-       
+
         xAxis: {
             type: 'datetime',
             labels: {
@@ -159,8 +181,8 @@ function createTempChart(items) {
         yAxis: {
             title: {
                 text: 'Temperature °C',
-                style : {
-                    color : '#fff',
+                style: {
+                    color: '#fff',
                 }
             },
             labels: {
@@ -168,7 +190,7 @@ function createTempChart(items) {
                     color: "#FFF",
                 }
             },
-            gridLineColor : 'transparent',
+            gridLineColor: 'transparent',
         },
         tooltip: {
             pointFormat: '<span style="color:{point.color}">\u25CF </span>{series.name} : <b>{point.y}%</b>'
@@ -191,7 +213,7 @@ function createTempChart(items) {
                         fontSize: 16
                     },
                 },
-                
+
                 marker: {
                     enabled: false,
                     symbol: 'circle',
@@ -208,9 +230,9 @@ function createTempChart(items) {
             name: 'temperature',
             data: items,
             color: '#e0225b',
-            lineWidth : 5
+            lineWidth: 5
         },
-    ]
+        ]
     });
 }
 
@@ -219,18 +241,18 @@ function createPressureChart(items) {
     Highcharts.chart('pressure', {
         chart: {
             type: 'area',
-            backgroundColor : 'transparent',
+            backgroundColor: 'transparent',
         },
-       
+
         title: {
-            floating : false,
-            align : 'left',
+            floating: false,
+            align: 'left',
             text: 'Average Weekly Pressure',
-            style : {
-                color : '#fff',
+            style: {
+                color: '#fff',
             }
         },
-       
+
         xAxis: {
             type: 'datetime',
             labels: {
@@ -248,8 +270,8 @@ function createPressureChart(items) {
         yAxis: {
             title: {
                 text: 'Pressure',
-                style : {
-                    color : '#fff',
+                style: {
+                    color: '#fff',
                 }
             },
             labels: {
@@ -257,7 +279,7 @@ function createPressureChart(items) {
                     color: "#FFF",
                 }
             },
-            gridLineColor : 'transparent',
+            gridLineColor: 'transparent',
         },
         tooltip: {
             pointFormat: '<span style="color:{point.color}">\u25CF </span>{series.name} : <b>{point.y}%</b>'
@@ -280,7 +302,7 @@ function createPressureChart(items) {
                         fontSize: 16
                     },
                 },
-                
+
                 marker: {
                     enabled: false,
                     symbol: 'circle',
@@ -297,8 +319,93 @@ function createPressureChart(items) {
             name: 'pressure',
             data: items,
             color: 'darkred',
-            lineWidth : 5
+            lineWidth: 5
         },
-    ]
+        ]
+    });
+}
+
+function createWeatherOverviews(items) {
+    Highcharts.chart('weeklyOverview', {
+        chart: {
+            type: 'spline',
+            backgroundColor: 'transparent',
+        },
+
+        title: {
+            floating: false,
+            align: 'left',
+            text: 'Average Weekly Humidity',
+            style: {
+                color: "#FFF",
+            }
+        },
+
+        xAxis: {
+            type: 'datetime',
+            labels: {
+                style: {
+                    color: "#FFF",
+                }
+            },
+
+            dateTimeLabelFormats: {
+                day: '%b %e',
+            },
+            tickInterval: 12 * 3600 * 1000,
+
+        },
+
+        yAxis: {
+            title: {
+                text: 'Weekly Overviews',
+                style: {
+                    color: "#FFF",
+                }
+            },
+            labels: {
+                style: {
+                    color: "#FFF",
+                }
+            },
+
+            gridLineColor: 'transparent',
+
+        },
+
+        plotOptions: {
+            series: {
+                dataLabels: {
+                    enabled: true,
+                    align: 'right',
+                    formatter: function () {
+                        if (this.point.x === this.series.data[this.series.data.length - 1].x) {
+                            return this.series.name;
+                        }
+                        return null;
+                    },
+                    style: {
+                        color: "#fff",
+                        fontWeight: 'bloder',
+                        fontSize: 16
+                    },
+                },
+                marker: {
+                    enabled: false,
+                    states: {
+                        hover: {
+                            enabled: true,
+                        }
+                    }
+                }
+            }
+        },
+
+        tooltip: {
+            pointFormat: '<span style="color:{point.color}">\u25CF </span>{series.name} : <b>{point.y}%</b>'
+        },
+
+        series: items
+
     });
 }
