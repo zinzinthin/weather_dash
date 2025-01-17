@@ -60,11 +60,20 @@ body {
     letter-spacing: 1.5px;
 }
 
-.todayoverviews .todayweather>div>span {
+.todayweather>div>span {
     font-size: 1vw;
 }
 
-.todayoverviews .hourlyweather > .card{
+.todayoverviews .hourlyweather{
+    scrollbar-width: none; /* firebox*/
+}
+
+.hourlyweather::-webkit-scrollbar{
+    display: none;
+}
+
+.hourlyweather > .card{
+    width: 75px;
     background-color: #ccc;
     border-radius: 12px;
 }

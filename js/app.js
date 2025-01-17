@@ -12,7 +12,7 @@ fetchLocation().then(data => {
             .then(data => {
                 displayWeatherData(data);
             });
-    }, 1000)
+    }, 1000);
 }).catch(err => {
     console.error(err);
     console.log("Please use a VPN!!");
@@ -37,7 +37,7 @@ async function fetchWeather(lati = "16.8257979", longi = "96.1456519") {
     const response = await fetch(uri);
     const data = await response.json();
 
-    console.log(uri);
+    // console.log(uri);
 
     return data;
 }
@@ -47,8 +47,9 @@ async function fetchWeather(lati = "16.8257979", longi = "96.1456519") {
 function displayWeatherData(data) {
 
     const weatherData = extractWeatherData(data);
-    showCharts(weatherData.humidity,weatherData.pressure,weatherData.pressure);
-
+    
+    showHourlyWeather(weatherData.hourlyData);
+    showCharts(weatherData.humidity, weatherData.temperature, weatherData.pressure);
 }
 
 //just extract weather data
@@ -71,13 +72,46 @@ function extractWeatherData(data) {
         item.main.pressure
     ]));
 
+    const hourlyData = items.map(item => ({
+        hour: new Date(item.dt_txt).getHours(),
+        weathericon: item.weather[0].icon,
+        temp: item.main.temp,
+    }));
+
     const weatherData = {
         humidity: humidityData,
         temperature: temperatureData,
         pressure: pressureData,
+        hourlyData,
     }
 
     return weatherData;
+}
+
+function showHourlyWeather(items) {
+
+    const container = document.querySelector(".hourlyweather");
+
+    items.forEach(item => {
+        const card = document.createElement('div');
+        card.classList.add("card", "shadow-sm", "text-center", "flex-shrink-0", "p-2", "me-2");
+
+        const icon = document.createElement('img');
+        icon.setAttribute("src", `https://openweathermap.org/img/wn/${item.weathericon}.png`);
+        icon.classList.add("p-1");
+
+        const hour = document.createElement('span');
+        hour.textContent = `${item.hour} : 00`;
+
+        const temp = document.createElement('span');
+        temp.textContent = item.temp;
+
+        card.appendChild(hour);
+        card.appendChild(icon);
+        card.appendChild(temp);
+
+        container.append(card);
+    });
 }
 
 //prepare data for charts
@@ -338,10 +372,12 @@ $(function () {
         select: function (event, ui) {
             let lat = ui.item.lat;
             let lon = ui.item.lon;
-
-            fetchWeather(lat, lon)
-                .then(data => displayWeatherData(data.list))
-                .catch(err => console.error(err));
+            
+                fetchWeather(lat, lon)
+                    .then(data => {
+                        displayWeatherData(data);
+                    });
+        
         },
         minLength: 3 // Minimum characters to trigger the autocomplete
     });
