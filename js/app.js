@@ -10,14 +10,16 @@ fetchLocation().then(data => {
     setTimeout(() => {
         fetchWeather(lati, longi)
             .then(data => {
-                console.log(data);
-                displayWeatherData(data.list);
+                displayWeatherData(data);
             });
     }, 1000)
 }).catch(err => {
     console.error(err);
     console.log("Please use a VPN!!");
 });
+
+
+//------------------------------------functions
 
 async function fetchLocation() {
     const response = await fetch(`https://api.ipregistry.co?key=${ipregistrykey}&fields=location`);
@@ -30,17 +32,19 @@ async function fetchWeather(lati = "16.8257979", longi = "96.1456519") {
     let lat = lati;
     let lon = longi;
 
-    const uri = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${openweathrkey}&units=metric`;
+    const uri = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${openweathrkey}`;
 
     const response = await fetch(uri);
     const data = await response.json();
+
+    console.log(uri);
 
     return data;
 }
 
 function displayWeatherData(data) {
 
-    const weatherData = extractWeatherData(data);
+    const weatherData = extractWeatherData(data.list);
 
     //information for creating charts
     const createCharts = {
@@ -292,7 +296,7 @@ function createAreaChart({ id, title, yTitle, data }) {
     });
 }
 
-//--------------------------------------------------------Jquery UI autocomplete with ajax
+//------------------------------------Jquery UI autocomplete with ajax
 
 $(function () {
     // Initialize jQuery UI Autocomplete

@@ -1,21 +1,24 @@
-*{
+* {
     box-sizing: border-box;
 }
 
-.letter-spacing-2{
+.letter-spacing-2 {
     letter-spacing: 2px;
 }
 
-body{
+body {
+    min-width: 375px;
     background-color: rgb(22, 25, 40);
     color: white;
 }
 
-.searchbox{
+/* start nav */
+.searchbox {
     width: 250px;
 }
 
-.ui-autocomplete{
+/* jquery ui autocomplement  */
+.ui-autocomplete {
 
     width: 245px;
     max-height: 200px;
@@ -31,7 +34,7 @@ body{
     border-radius: 0 0 5px 5px;
 }
 
-.ui-menu-item{
+.ui-menu-item {
     width: 100% !important;
     color: #000;
 
@@ -42,8 +45,35 @@ body{
 
 }
 
-.ui-menu-item:hover{
+.ui-menu-item:hover {
     background-color: #f6f6f6;
 }
 
+/* end nav */
 
+/* start section todayoverviews */
+.todayoverviews{
+    background-color: #958f8f5c;
+    border-radius: 20px;
+}
+.todayoverviews .todayweather>div>h3 {
+    letter-spacing: 1.5px;
+}
+
+.todayoverviews .todayweather>div>span {
+    font-size: 1vw;
+}
+
+.todayoverviews .hourlyweather > .card{
+    background-color: #ccc;
+    border-radius: 12px;
+}
+
+/* end section todayoverviews */
+
+/* x-small */
+@media (max-width : 576px) {
+    .todayoverviews .todayweather>div>h3 {
+        font-size: 16px;
+    }
+}
