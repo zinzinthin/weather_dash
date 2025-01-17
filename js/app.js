@@ -19,7 +19,7 @@ fetchLocation().then(data => {
 });
 
 
-//------------------------------------functions
+//------------------------------------fetch API
 
 async function fetchLocation() {
     const response = await fetch(`https://api.ipregistry.co?key=${ipregistrykey}&fields=location`);
@@ -42,15 +42,16 @@ async function fetchWeather(lati = "16.8257979", longi = "96.1456519") {
     return data;
 }
 
+//------------------------------------functions
+
 function displayWeatherData(data) {
 
     const weatherData = extractWeatherData(data);
-    
     showCharts(weatherData.humidity,weatherData.pressure,weatherData.pressure);
 
 }
 
-//prepare weather data for showing in charts
+//just extract weather data
 function extractWeatherData(data) {
 
     const items = data.list;
@@ -79,6 +80,8 @@ function extractWeatherData(data) {
     return weatherData;
 }
 
+//prepare data for charts
+//and then create charts
 function showCharts(...weatherData) {
 
     //chart series
