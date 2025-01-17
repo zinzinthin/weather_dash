@@ -44,47 +44,16 @@ async function fetchWeather(lati = "16.8257979", longi = "96.1456519") {
 
 function displayWeatherData(data) {
 
-    const weatherData = extractWeatherData(data.list);
-
-    //information for creating charts
-    const createCharts = {
-        humidity: {
-            id: 'humidity',
-            title: 'Average Weekly Humidity',
-            yTitle: 'Humidity',
-            data: [weatherData[0]],
-        },
-        temperature: {
-            id: 'temperature',
-            title: 'Average Weekly Temperature',
-            yTitle: 'Temperature °C',
-            data: [weatherData[1]],
-        },
-        pressure: {
-            id: 'pressure',
-            title: 'Average Weekly Pressure',
-            yTitle: 'Pressure',
-            data: [weatherData[2]]
-        },
-        overall: {
-            id: 'weeklyOverview',
-            title: 'Weekly Overview',
-            yTitle: 'Over All Chart',
-            data: weatherData,
-        }
-
-    };
-
-    createSplineChart(createCharts.humidity);
-    createSplineChart(createCharts.overall);
-
-    createAreaChart(createCharts.temperature);
-    createAreaChart(createCharts.pressure);
+    const weatherData = extractWeatherData(data);
+    
+    showCharts(weatherData.humidity,weatherData.pressure,weatherData.pressure);
 
 }
 
 //prepare weather data for showing in charts
-function extractWeatherData(items) {
+function extractWeatherData(data) {
+
+    const items = data.list;
 
     const humidityData = items.map(item => ([
         item.dt * 1000,
@@ -101,29 +70,72 @@ function extractWeatherData(items) {
         item.main.pressure
     ]));
 
+    const weatherData = {
+        humidity: humidityData,
+        temperature: temperatureData,
+        pressure: pressureData,
+    }
 
-    const weatherData = [
+    return weatherData;
+}
+
+function showCharts(...weatherData) {
+
+    //chart series
+    const series = [
         {
             name: "humidity",
-            data: humidityData,
+            data: weatherData[0],
             lineWidth: 5
         },
         {
             name: "temperature",
-            data: temperatureData,
+            data: weatherData[1],
             lineWidth: 5,
             color: '#e0225b',
         },
         {
             name: "pressure",
-            data: pressureData,
+            data: weatherData[2],
             lineWidth: 5,
             color: 'darkred',
         },
     ];
 
-    return weatherData;
+    //information for creating charts
+    const createCharts = {
+        humidity: {
+            id: 'humidity',
+            title: 'Average Weekly Humidity',
+            yTitle: 'Humidity',
+            data: [series[0]],
+        },
+        temperature: {
+            id: 'temperature',
+            title: 'Average Weekly Temperature',
+            yTitle: 'Temperature °C',
+            data: [series[1]],
+        },
+        pressure: {
+            id: 'pressure',
+            title: 'Average Weekly Pressure',
+            yTitle: 'Pressure',
+            data: [series[2]]
+        },
+        overall: {
+            id: 'weeklyOverview',
+            title: 'Weekly Overview',
+            yTitle: 'Over All Chart',
+            data: series,
+        }
 
+    };
+
+    createSplineChart(createCharts.humidity);
+    createSplineChart(createCharts.overall);
+
+    createAreaChart(createCharts.temperature);
+    createAreaChart(createCharts.pressure);
 }
 
 function createSplineChart({ id, title, yTitle, data }) {
