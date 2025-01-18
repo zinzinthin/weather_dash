@@ -51,8 +51,9 @@ body {
 
 /* end nav */
 
-/* start section todayoverviews */
+/* start todayoverviews */
 .todayoverviews{
+    min-height: 250px;
     background-color: #958f8f5c;
     border-radius: 20px;
 }
@@ -78,7 +79,13 @@ body {
     border-radius: 12px;
 }
 
-/* end section todayoverviews */
+#map{
+    min-height: 250px;
+    border-radius: 20px;
+}
+
+/* end todayoverviews */
+
 
 /* x-small */
 @media (max-width : 576px) {

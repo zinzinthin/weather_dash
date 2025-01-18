@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" />
     <!-- fontawesome css1 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+    <!-- leaflet css1 js1 -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" /> 
     <!-- custom css1 -->
     <link rel="stylesheet" href="css/app.css">
 
@@ -44,7 +46,7 @@
         <!-- start today overviews -->
         <section class="my-5">
             <h2 class="fw-bolder letter-spacing-2">Today OverViews</h2>
-            <div class="row row-cols-1 row-cols-lg-2">
+            <div class="row row-cols-1 row-cols-lg-2 gy-5">
 
                 <div class="col p-4 todayoverviews">
                     <div class="d-flex flex-nowrap justify-content-between mb-3 todayweather">
@@ -54,22 +56,22 @@
                         </div>
                         <!-- country -->
                         <div class="">
-                            <h3 id="countryCode" class="fw-bolder">MM</h3>
-                            <span id="cityName">Yangon</span>
+                            <h3 id="countryCode" class="fw-bolder"></h3>
+                            <span id="cityName"></span>
                         </div>
                         <!-- tempreature -->
                         <div class="">
-                            <h3 id="currentTemp" class="fw-bolder">11.92</h3>
+                            <h3 id="currentTemp" class="fw-bolder"></h3>
                             <span>Tempreature</span>
                         </div>
                         <!-- humidity -->
                         <div class="">
-                            <h3 id="currentHumidity" class="fw-bolder">67%</h3>
+                            <h3 id="currentHumidity" class="fw-bolder"></h3>
                             <span>Humidity</span>
                         </div>
                         <!-- windspeed -->
                         <div class="">
-                            <h3 id="currentWindSpeed" class="fw-bolder">1.1 Km/H</h3>
+                            <h3 id="currentWindSpeed" class="fw-bolder"></h3>
                             <span>Wind Speed</span>
                         </div>
                     </div>
@@ -79,7 +81,7 @@
                 </div>
 
                 <div class="col">
-                    <p>Map</p>
+                    <div id="map" class="w-100"></div>
                 </div>
             </div>
         </section>
@@ -126,6 +128,8 @@
     <!-- jquery js2 -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js"></script>
+    <!-- leaflet css1 js1 -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" ></script>  
     <!-- highcharts js5-->
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>

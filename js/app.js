@@ -2,14 +2,28 @@
 const ipregistrykey = "ira_6Ep5a9o0Kp9C7jUix5AaJX6hea31C40IBpGM";
 const openweathrkey = "3e47c1570e1e6c8480182d878001cdf0";
 
-//fetch lat & logi for user current location 
-//and then display weather info
-fetchLocation().then(data => {
-    const lati = data.location.latitude;
-    const longi = data.location.longitude;
+//default location
+let latitude = "16.9345949";
+let longitude = "97.3462813";
 
+let map;
+let marker;
+//show user location on map
+createMap();
+
+//fetch lat & logi for user current location 
+fetchLocation().then(data => {
+
+    //overwrite default location with user current location
+    latitude = data.location.latitude;
+    longitude = data.location.longitude;
+
+    //change map view and marker with user location
+    updateMap();
+
+    //display weather info
     setTimeout(() => {
-        fetchWeather(lati, longi)
+        fetchWeather()
             .then(data => {
                 displayWeatherData(data);
             });
@@ -28,22 +42,19 @@ async function fetchLocation() {
     return data;
 }
 
-async function fetchWeather(lati = "16.8257979", longi = "96.1456519") {
+async function fetchWeather() {
 
-    let lat = lati;
-    let lon = longi;
-
-    const currentweatheruri = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${openweathrkey}`
-    const weeklyuri = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${openweathrkey}`;
+    const currentweatheruri = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${openweathrkey}`
+    const weeklyuri = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${openweathrkey}`;
 
     const current = await fetch(currentweatheruri);
     const weekly = await fetch(weeklyuri);
 
-    const [currentresponse,weeklyresponse] = await Promise.all([current,weekly]);
+    const [currentresponse, weeklyresponse] = await Promise.all([current, weekly]);
     const currentData = await currentresponse.json();
     const weeklyData = await weeklyresponse.json();
 
-    return {currentData,weeklyData};
+    return { currentData, weeklyData };
 }
 
 //------------------------------------functions
@@ -51,9 +62,10 @@ async function fetchWeather(lati = "16.8257979", longi = "96.1456519") {
 function displayWeatherData(data) {
 
     const weatherData = extractWeatherData(data);
-    
+
     showCurrentWeather(weatherData.currentinfo);
     showHourlyWeather(weatherData.hourlyData);
+
     showCharts(weatherData.humidity, weatherData.temperature, weatherData.pressure);
 }
 
@@ -62,15 +74,15 @@ function extractWeatherData(data) {
 
     //extract necessary current weather info
     const current = data.currentData;
-    
+
     const currentinfo = {
-        country : current.sys.country,
-        city : current.name,
-        temp : current.main.temp,
-        humidity : current.main.humidity,
-        windspeed : current.wind.speed,
+        country: current.sys.country,
+        city: current.name,
+        temp: current.main.temp,
+        humidity: current.main.humidity,
+        windspeed: current.wind.speed,
     }
-   
+
     //extract necessary weekly weather info
     const lists = data.weeklyData.list;
 
@@ -100,13 +112,13 @@ function extractWeatherData(data) {
         hourlyData,
         humidity: humidityData,
         temperature: temperatureData,
-        pressure: pressureData,       
+        pressure: pressureData,
     }
 
     return weatherData;
 }
 
-function showCurrentWeather(item){
+function showCurrentWeather(item) {
 
     document.querySelector("#countryCode").textContent = item.country;
     document.querySelector("#cityName").textContent = item.city;
@@ -140,6 +152,47 @@ function showHourlyWeather(items) {
 
         container.append(card);
     });
+}
+
+function createMap() {
+    //initialize the map
+    map = L.map('map', {
+        center: [latitude, longitude],
+        zoom: 7
+    });
+
+    //marker
+    marker = L.marker([latitude, longitude]).addTo(map)
+        .openPopup();
+
+
+    //add openstreetmap titles
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    //map is clicked, show weather info
+    map.on('click', function (e) {
+
+        const { lat, lng } = e.latlng;
+
+        //overwrite user current location with user clicked map location
+        latitude = lat;
+        longitude = lng;
+
+        //change view and marker with user clicked location
+        updateMap();
+
+        fetchWeather()
+            .then(data => {
+                displayWeatherData(data);
+            });
+    });
+}
+
+function updateMap() {
+    map.setView([latitude, longitude], 7);
+    marker.setLatLng([latitude, longitude]);
 }
 
 //prepare data for charts
@@ -373,6 +426,7 @@ function createAreaChart({ id, title, yTitle, data }) {
     });
 }
 
+
 //------------------------------------Jquery UI autocomplete with ajax
 
 $(function () {
@@ -398,16 +452,20 @@ $(function () {
             }).fail(err => console.log(err));
         },
         select: function (event, ui) {
-            let lat = ui.item.lat;
-            let lon = ui.item.lon;
-            
-                fetchWeather(lat, lon)
-                    .then(data => {
-                        displayWeatherData(data);
-                    });
-        
+            latitude = ui.item.lat;
+            longitude = ui.item.lon;
+
+            //change map view and marker with user search city
+            updateMap();
+
+            //display weather info for user search city
+            fetchWeather()
+                .then(data => {
+                    displayWeatherData(data);
+                });
+
         },
-       
+
         // minLength: 3 // Minimum characters to trigger the autocomplete
     });
 });
