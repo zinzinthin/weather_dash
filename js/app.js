@@ -8,6 +8,10 @@ let longitude = "97.3462813";
 
 let map;
 let marker;
+
+//date - navbar
+showTodayDate();
+
 //show user location on map
 createMap();
 
@@ -58,6 +62,12 @@ async function fetchWeather() {
 }
 
 //------------------------------------functions
+
+function showTodayDate(){
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November","December"];
+    const date = new Date();
+    document.querySelector("#date").textContent = `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+}
 
 function displayWeatherData(data) {
 
@@ -120,11 +130,12 @@ function extractWeatherData(data) {
 
 function showCurrentWeather(item) {
 
+    document.querySelector("#flag").className = `flag-icon flag-icon-${item.country.toLowerCase()}`; 
     document.querySelector("#countryCode").textContent = item.country;
     document.querySelector("#cityName").textContent = item.city;
     document.querySelector("#currentTemp").textContent = item.temp;
-    document.querySelector("#currentHumidity").textContent = item.humidity;
-    document.querySelector("#currentWindSpeed").textContent = item.windspeed;
+    document.querySelector("#currentHumidity").textContent = item.humidity + "%";
+    document.querySelector("#currentWindSpeed").textContent = item.windspeed + "km/h";
 
 }
 
@@ -466,7 +477,6 @@ $(function () {
 
         },
 
-        // minLength: 3 // Minimum characters to trigger the autocomplete
     });
 });
 

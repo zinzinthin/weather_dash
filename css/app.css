@@ -53,9 +53,10 @@ body {
 
 /* start todayoverviews */
 .todayoverviews{
-    min-height: 250px;
+    height: 250px;
     background-color: #958f8f5c;
     border-radius: 20px;
+    overflow: hidden;
 }
 .todayoverviews .todayweather>div>h3 {
     letter-spacing: 1.5px;
@@ -77,6 +78,11 @@ body {
     width: 75px;
     background-color: #ccc;
     border-radius: 12px;
+}
+
+#flag{
+    width: 80px;
+    height: 40px;
 }
 
 #map{

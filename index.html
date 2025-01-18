@@ -10,7 +10,9 @@
     <!-- fontawesome css1 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
     <!-- leaflet css1 js1 -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" /> 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- flag icon css1 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" />
     <!-- custom css1 -->
     <link rel="stylesheet" href="css/app.css">
 
@@ -25,7 +27,7 @@
                 <a href="" class="navbar-brand fs-4">
                     <strong>Wea Dash</strong>
                 </a>
-                <div><small>January 15, 25</small></div>
+                <div><small id="date"></small></div>
             </div>
             <!-- search box -->
             <div class="searchbox">
@@ -51,27 +53,27 @@
                 <div class="col p-4 todayoverviews">
                     <div class="d-flex flex-nowrap justify-content-between mb-3 todayweather">
                         <!-- flag -->
-                        <div class="d-none d-sm-block">
-                            <span>Flag</span>
+                        <div class="d-none d-sm-block">   
+                            <span id="flag"></span>
                         </div>
                         <!-- country -->
                         <div class="">
                             <h3 id="countryCode" class="fw-bolder"></h3>
-                            <span id="cityName"></span>
+                            <span id="cityName" class="text-nowrap"></span>
                         </div>
                         <!-- tempreature -->
                         <div class="">
-                            <h3 id="currentTemp" class="fw-bolder"></h3>
+                            <h3 id="currentTemp" class="text-nowrap fw-bolder"></h3>
                             <span>Tempreature</span>
                         </div>
                         <!-- humidity -->
                         <div class="">
-                            <h3 id="currentHumidity" class="fw-bolder"></h3>
+                            <h3 id="currentHumidity" class="text-nowrap fw-bolder"></h3>
                             <span>Humidity</span>
                         </div>
                         <!-- windspeed -->
                         <div class="">
-                            <h3 id="currentWindSpeed" class="fw-bolder"></h3>
+                            <h3 id="currentWindSpeed" class="text-nowrap fw-bolder"></h3>
                             <span>Wind Speed</span>
                         </div>
                     </div>
@@ -129,7 +131,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js"></script>
     <!-- leaflet css1 js1 -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" ></script>  
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- highcharts js5-->
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
