@@ -18,23 +18,14 @@ createMap();
 //fetch lat & logi for user current location 
 fetchLocation().then(data => {
 
-    //overwrite default location with user current location
+    //overwrite with user current location
     latitude = data.location.latitude;
     longitude = data.location.longitude;
 
-    //change map view and marker with user location
-    updateMap();
-
-    //display weather info
-    setTimeout(() => {
-        fetchWeather()
-            .then(data => {
-                displayWeatherData(data);
-            });
-    }, 1000);
+    loadingData();
 
 }).catch(err => {
-    console.log("Please use a VPN!!");
+    console.log("Please use a VPN!", err);
 });
 
 
@@ -63,10 +54,18 @@ async function fetchWeather() {
 
 //------------------------------------functions
 
-function showTodayDate(){
-    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November","December"];
-    const date = new Date();
-    document.querySelector("#date").textContent = `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+function loadingData() {
+
+    //change map view and marker according to location
+    updateMap();
+
+    //display weather info
+    setTimeout(() => {
+        fetchWeather()
+            .then(data => {
+                displayWeatherData(data);
+            }).catch(err => console.log("Fetch Weather API", err));
+    }, 500);
 }
 
 function displayWeatherData(data) {
@@ -96,6 +95,12 @@ function extractWeatherData(data) {
     //extract necessary weekly weather info
     const lists = data.weeklyData.list;
 
+    const hourlyData = lists.map(item => ({
+        hour: new Date(item.dt_txt).getHours(),
+        weathericon: item.weather[0].icon,
+        hourtemp: item.main.temp,
+    }));
+
     const humidityData = lists.map(item => ([
         item.dt * 1000,
         item.main.humidity
@@ -111,12 +116,6 @@ function extractWeatherData(data) {
         item.main.pressure
     ]));
 
-    const hourlyData = lists.map(item => ({
-        hour: new Date(item.dt_txt).getHours(),
-        weathericon: item.weather[0].icon,
-        temp: item.main.temp,
-    }));
-
     const weatherData = {
         currentinfo,
         hourlyData,
@@ -128,9 +127,15 @@ function extractWeatherData(data) {
     return weatherData;
 }
 
+function showTodayDate() {
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const date = new Date();
+    document.querySelector("#date").textContent = `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+}
+
 function showCurrentWeather(item) {
 
-    document.querySelector("#flag").className = `flag-icon flag-icon-${item.country.toLowerCase()}`; 
+    document.querySelector("#flag").className = `flag-icon flag-icon-${item.country.toLowerCase()}`;
     document.querySelector("#countryCode").textContent = item.country;
     document.querySelector("#cityName").textContent = item.city;
     document.querySelector("#currentTemp").textContent = item.temp;
@@ -142,6 +147,7 @@ function showCurrentWeather(item) {
 function showHourlyWeather(items) {
 
     const container = document.querySelector(".hourlyweather");
+    container.innerHTML = '';
 
     items.forEach(item => {
         const card = document.createElement('div');
@@ -155,7 +161,7 @@ function showHourlyWeather(items) {
         hour.textContent = `${item.hour} : 00`;
 
         const temp = document.createElement('span');
-        temp.textContent = item.temp;
+        temp.textContent = item.hourtemp;
 
         card.appendChild(hour);
         card.appendChild(icon);
@@ -163,47 +169,6 @@ function showHourlyWeather(items) {
 
         container.append(card);
     });
-}
-
-function createMap() {
-    //initialize the map
-    map = L.map('map', {
-        center: [latitude, longitude],
-        zoom: 7
-    });
-
-    //marker
-    marker = L.marker([latitude, longitude]).addTo(map)
-        .openPopup();
-
-
-    //add openstreetmap titles
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    //map is clicked, show weather info
-    map.on('click', function (e) {
-
-        const { lat, lng } = e.latlng;
-
-        //overwrite user current location with user clicked map location
-        latitude = lat;
-        longitude = lng;
-
-        //change view and marker with user clicked location
-        updateMap();
-
-        fetchWeather()
-            .then(data => {
-                displayWeatherData(data);
-            });
-    });
-}
-
-function updateMap() {
-    map.setView([latitude, longitude], 7);
-    marker.setLatLng([latitude, longitude]);
 }
 
 //prepare data for charts
@@ -437,9 +402,43 @@ function createAreaChart({ id, title, yTitle, data }) {
     });
 }
 
+function createMap() {
+    //initialize the map
+    map = L.map('map', {
+        center: [latitude, longitude],
+        zoom: 7
+    });
+
+    //marker
+    marker = L.marker([latitude, longitude]).addTo(map)
+        .openPopup();
+
+
+    //add openstreetmap titles
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    //map is clicked, show weather info
+    map.on('click', function (e) {
+
+        const { lat, lng } = e.latlng;
+
+        //overwrite location
+        latitude = lat;
+        longitude = lng;
+
+        loadingData();
+    });
+}
+
+function updateMap() {
+    map.setView([latitude, longitude], 7);
+    marker.setLatLng([latitude, longitude]);
+}
+
 
 //------------------------------------Jquery UI autocomplete with ajax
-
 $(function () {
     // Initialize jQuery UI Autocomplete
     $('#searchCity').autocomplete({
@@ -463,17 +462,11 @@ $(function () {
             }).fail(err => console.log(err));
         },
         select: function (event, ui) {
+
             latitude = ui.item.lat;
             longitude = ui.item.lon;
 
-            //change map view and marker with user search city
-            updateMap();
-
-            //display weather info for user search city
-            fetchWeather()
-                .then(data => {
-                    displayWeatherData(data);
-                });
+            loadingData();
 
         },
 
