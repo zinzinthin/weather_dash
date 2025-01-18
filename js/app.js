@@ -7,14 +7,15 @@ const openweathrkey = "3e47c1570e1e6c8480182d878001cdf0";
 fetchLocation().then(data => {
     const lati = data.location.latitude;
     const longi = data.location.longitude;
+
     setTimeout(() => {
         fetchWeather(lati, longi)
             .then(data => {
                 displayWeatherData(data);
             });
     }, 1000);
+
 }).catch(err => {
-    console.error(err);
     console.log("Please use a VPN!!");
 });
 
@@ -32,14 +33,17 @@ async function fetchWeather(lati = "16.8257979", longi = "96.1456519") {
     let lat = lati;
     let lon = longi;
 
-    const uri = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${openweathrkey}`;
+    const currentweatheruri = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${openweathrkey}`
+    const weeklyuri = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${openweathrkey}`;
 
-    const response = await fetch(uri);
-    const data = await response.json();
+    const current = await fetch(currentweatheruri);
+    const weekly = await fetch(weeklyuri);
 
-    // console.log(uri);
+    const [currentresponse,weeklyresponse] = await Promise.all([current,weekly]);
+    const currentData = await currentresponse.json();
+    const weeklyData = await weeklyresponse.json();
 
-    return data;
+    return {currentData,weeklyData};
 }
 
 //------------------------------------functions
@@ -48,6 +52,7 @@ function displayWeatherData(data) {
 
     const weatherData = extractWeatherData(data);
     
+    showCurrentWeather(weatherData.currentinfo);
     showHourlyWeather(weatherData.hourlyData);
     showCharts(weatherData.humidity, weatherData.temperature, weatherData.pressure);
 }
@@ -55,37 +60,60 @@ function displayWeatherData(data) {
 //just extract weather data
 function extractWeatherData(data) {
 
-    const items = data.list;
+    //extract necessary current weather info
+    const current = data.currentData;
+    
+    const currentinfo = {
+        country : current.sys.country,
+        city : current.name,
+        temp : current.main.temp,
+        humidity : current.main.humidity,
+        windspeed : current.wind.speed,
+    }
+   
+    //extract necessary weekly weather info
+    const lists = data.weeklyData.list;
 
-    const humidityData = items.map(item => ([
+    const humidityData = lists.map(item => ([
         item.dt * 1000,
         item.main.humidity
     ]));
 
-    const temperatureData = items.map(item => ([
+    const temperatureData = lists.map(item => ([
         item.dt * 1000,
         item.main.temp
     ]));
 
-    const pressureData = items.map(item => ([
+    const pressureData = lists.map(item => ([
         item.dt * 1000,
         item.main.pressure
     ]));
 
-    const hourlyData = items.map(item => ({
+    const hourlyData = lists.map(item => ({
         hour: new Date(item.dt_txt).getHours(),
         weathericon: item.weather[0].icon,
         temp: item.main.temp,
     }));
 
     const weatherData = {
+        currentinfo,
+        hourlyData,
         humidity: humidityData,
         temperature: temperatureData,
-        pressure: pressureData,
-        hourlyData,
+        pressure: pressureData,       
     }
 
     return weatherData;
+}
+
+function showCurrentWeather(item){
+
+    document.querySelector("#countryCode").textContent = item.country;
+    document.querySelector("#cityName").textContent = item.city;
+    document.querySelector("#currentTemp").textContent = item.temp;
+    document.querySelector("#currentHumidity").textContent = item.humidity;
+    document.querySelector("#currentWindSpeed").textContent = item.windspeed;
+
 }
 
 function showHourlyWeather(items) {
@@ -367,7 +395,7 @@ $(function () {
                     }));
                 response(cities);
 
-            }).fail(err => console.error(err));
+            }).fail(err => console.log(err));
         },
         select: function (event, ui) {
             let lat = ui.item.lat;
@@ -379,7 +407,8 @@ $(function () {
                     });
         
         },
-        minLength: 3 // Minimum characters to trigger the autocomplete
+       
+        // minLength: 3 // Minimum characters to trigger the autocomplete
     });
 });
 
